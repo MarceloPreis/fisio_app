@@ -8,14 +8,18 @@ import 'package:google_mlkit_commons/google_mlkit_commons.dart';
 class CameraView extends StatefulWidget {
   CameraView(
       {Key? key,
+      required this.title,
       required this.customPaint,
       required this.onImage,
+      required this.errorMessage,
       this.onCameraFeedReady,
       this.onDetectorViewModeChanged,
       this.onCameraLensDirectionChanged,
       this.initialCameraLensDirection = CameraLensDirection.back})
       : super(key: key);
 
+  final String title;
+  String errorMessage;
   final CustomPaint? customPaint;
   final Function(InputImage inputImage) onImage;
   final VoidCallback? onCameraFeedReady;
@@ -91,11 +95,14 @@ class _CameraViewState extends State<CameraView> {
                     child: widget.customPaint,
                   ),
           ),
+          
           _backButton(),
+          _title(),
           _switchLiveCameraToggle(),
           _detectionViewModeToggle(),
           _zoomControl(),
-          _exposureControl(),
+          if (widget.errorMessage.isNotEmpty) _errorMessageShow(),
+          // _exposureControl(),
         ],
       ),
     );
@@ -110,7 +117,7 @@ class _CameraViewState extends State<CameraView> {
           child: FloatingActionButton(
             heroTag: Object(),
             onPressed: () => Navigator.of(context).pop(),
-            backgroundColor: Colors.black54,
+            backgroundColor: Colors.white,
             child: Icon(
               Icons.arrow_back_ios_outlined,
               size: 20,
@@ -118,6 +125,63 @@ class _CameraViewState extends State<CameraView> {
           ),
         ),
       );
+
+  Widget _title() => Positioned(
+        top: 40,
+        left: MediaQuery.of(context).size.width / 2 - 75, // Calcula a posição central
+        child: SizedBox(
+          height: 50.0,
+          width: 150.0,
+
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Center(
+                child: Text(
+                  widget.title,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+  Widget _errorMessageShow() => Positioned(
+        top: 100,
+        left: 8,
+        right: 8, // Adiciona limite à direita para centralização
+        child: Align(
+          alignment: Alignment.center, // Centraliza o widget horizontalmente
+          child: Container(
+            constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width -
+                  16, // Limita a largura máxima
+            ),
+            decoration: BoxDecoration(
+              color: Colors.red,
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Center(
+                child: Text(
+                  widget.errorMessage ??
+                      'Erro desconhecido', // Usando a variável _errorMessage
+                  style: TextStyle(
+                      color:
+                          Colors.white), // Opcional: Ajusta o estilo do texto
+                  textAlign: TextAlign.center, // Centraliza o texto
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
 
   Widget _detectionViewModeToggle() => Positioned(
         bottom: 8,
@@ -128,7 +192,7 @@ class _CameraViewState extends State<CameraView> {
           child: FloatingActionButton(
             heroTag: Object(),
             onPressed: widget.onDetectorViewModeChanged,
-            backgroundColor: Colors.black54,
+            backgroundColor: Colors.white,
             child: Icon(
               Icons.photo_library_outlined,
               size: 25,
@@ -146,7 +210,7 @@ class _CameraViewState extends State<CameraView> {
           child: FloatingActionButton(
             heroTag: Object(),
             onPressed: _switchLiveCamera,
-            backgroundColor: Colors.black54,
+            backgroundColor: Colors.white,
             child: Icon(
               Platform.isIOS
                   ? Icons.flip_camera_ios_outlined
@@ -158,13 +222,13 @@ class _CameraViewState extends State<CameraView> {
       );
 
   Widget _zoomControl() => Positioned(
-        bottom: 16,
+        bottom: 10,
         left: 0,
         right: 0,
         child: Align(
           alignment: Alignment.bottomCenter,
           child: SizedBox(
-            width: 250,
+            width: 225,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -186,12 +250,8 @@ class _CameraViewState extends State<CameraView> {
                 ),
                 Container(
                   width: 50,
-                  decoration: BoxDecoration(
-                    color: Colors.black54,
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
                   child: Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(2.0),
                     child: Center(
                       child: Text(
                         '${_currentZoomLevel.toStringAsFixed(1)}x',
@@ -217,7 +277,7 @@ class _CameraViewState extends State<CameraView> {
             Container(
               width: 55,
               decoration: BoxDecoration(
-                color: Colors.black54,
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(10.0),
               ),
               child: Padding(
