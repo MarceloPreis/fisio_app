@@ -29,6 +29,55 @@ class LateralElevation extends Exercise {
     }
 
     @override
+    bool isApexPosition(Map<PoseLandmarkType, PoseLandmark> landmarks) {
+      bool leftArm = checkAngle(
+        landmarks,
+        PoseLandmarkType.leftElbow,
+        PoseLandmarkType.leftShoulder,
+        PoseLandmarkType.leftHip,
+        '',
+        '>=',
+        85,
+      );
+
+      bool rightArm = checkAngle(
+        landmarks,
+        PoseLandmarkType.rightElbow,
+        PoseLandmarkType.rightShoulder,
+        PoseLandmarkType.rightHip,
+        '',
+        '>=',
+        85,
+      );
+
+      return leftArm && rightArm;
+    }
+
+    @override
+    bool isRestPosition(Map<PoseLandmarkType, PoseLandmark> landmarks) {
+      bool leftArm = checkAngle(
+        landmarks,
+        PoseLandmarkType.leftElbow,
+        PoseLandmarkType.leftShoulder,
+        PoseLandmarkType.leftHip,
+        '',
+        '<=',
+        30,
+      );
+
+      bool rightArm = checkAngle(
+        landmarks,
+        PoseLandmarkType.rightElbow,
+        PoseLandmarkType.rightShoulder,
+        PoseLandmarkType.rightHip,
+        '',
+        '<=',
+        30,
+      );
+
+      return leftArm && rightArm;
+    }
+
     List<ExerciseRule> getRules() {
 
       final List<ExerciseRule> rules = [
@@ -37,27 +86,40 @@ class LateralElevation extends Exercise {
             test:(Map<PoseLandmarkType, PoseLandmark> landmarks) {
               return checkAngle(
                   landmarks, 
-                  PoseLandmarkType.leftShoulder,
                   PoseLandmarkType.leftElbow,
+                  PoseLandmarkType.leftShoulder,
                   PoseLandmarkType.leftHip,
                   '',
-                  '>',
-                  120.0,
+                  '<',
+                  100.0,
+                );
+            },
+        ),
+        ExerciseRule(
+            errorMessage: "O pulso e cutovelo direitos não podem ultrapassar a altura do ombro",
+            test:(Map<PoseLandmarkType, PoseLandmark> landmarks) {
+              return checkAngle(
+                  landmarks, 
+                  PoseLandmarkType.rightElbow,
+                  PoseLandmarkType.rightShoulder,
+                  PoseLandmarkType.rightHip,
+                  '',
+                  '<',
+                  100.0,
                 );
             },
         ),
         // ExerciseRule(
-        //     rule: 'A pessoa deve estar em movimento',
-        //     violation: false,
+        //     errorMessage: "Mantenha o pés alinhados com o quadril",
+        //     test:(Map<PoseLandmarkType, PoseLandmark> landmarks) {
+        //       return areTwoPointsAlmostCollinear(
+        //           landmarks, 
+        //           PoseLandmarkType.rightKnee,
+        //           PoseLandmarkType.rightHip,
+        //           100.0,
+        //         );
+        //     },
         // ),
-        // ExerciseRule(
-        //     rule: 'O exercício deve ser feito com uma mão no chão',
-        //     violation: true,
-        // ),
-        // ExerciseRule(
-        //     rule: 'O exercício deve ser feito com uma mão em um dos ombros',
-        //     violation: false,
-        // )
       ];
 
       return rules;

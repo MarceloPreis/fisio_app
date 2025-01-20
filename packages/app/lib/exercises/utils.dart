@@ -52,3 +52,23 @@ double calculateAngle(PoseLandmark point1, PoseLandmark point2, PoseLandmark poi
 
   return angle;
 }
+
+bool areTwoPointsAlmostCollinear(
+    Map<PoseLandmarkType, PoseLandmark> landmarks,
+    PoseLandmarkType pointType1,
+    PoseLandmarkType pointType2,
+    double tolerance) {
+  final PoseLandmark? point1 = landmarks[pointType1];
+  final PoseLandmark? point2 = landmarks[pointType2];
+
+  if (point1 == null || point2 == null) {
+    return false;
+  }
+
+  final double deltaX = (point2.x - point1.x).abs();
+  final double deltaY = (point2.y - point1.y).abs();
+
+  return deltaX <= tolerance && deltaY <= tolerance;
+}
+
+

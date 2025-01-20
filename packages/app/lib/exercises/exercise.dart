@@ -21,6 +21,8 @@ abstract class Exercise {
 
 
   MovementAnalysisResponse movementAnalysis(Map<PoseLandmarkType, PoseLandmark> posesLandmarks);
+  bool isApexPosition(Map<PoseLandmarkType, PoseLandmark> posesLandmarks);
+  bool isRestPosition(Map<PoseLandmarkType, PoseLandmark> posesLandmarks);
 
   // Método para exibir informações detalhadas sobre o exercício
   void displayDetails() {

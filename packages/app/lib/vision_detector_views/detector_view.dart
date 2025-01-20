@@ -13,6 +13,7 @@ class DetectorView extends StatefulWidget {
     required this.title,
     required this.onImage,
     required this.errorMessage,
+    this.repsCount = 0,
     this.customPaint,
     this.text,
     this.initialDetectionMode = DetectorViewMode.liveFeed,
@@ -23,6 +24,7 @@ class DetectorView extends StatefulWidget {
   }) : super(key: key);
 
   String errorMessage;
+  int repsCount;
   final String title;
   final CustomPaint? customPaint;
   final String? text;
@@ -52,6 +54,7 @@ class _DetectorViewState extends State<DetectorView> {
         ? CameraView(
             title: widget.title,
             errorMessage: widget.errorMessage ?? "",
+            repsCount: widget.repsCount ?? 0,
             customPaint: widget.customPaint,
             onImage: widget.onImage,
             onCameraFeedReady: widget.onCameraFeedReady,

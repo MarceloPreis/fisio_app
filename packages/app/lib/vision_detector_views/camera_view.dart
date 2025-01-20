@@ -12,6 +12,7 @@ class CameraView extends StatefulWidget {
       required this.customPaint,
       required this.onImage,
       required this.errorMessage,
+      this.repsCount = 0,
       this.onCameraFeedReady,
       this.onDetectorViewModeChanged,
       this.onCameraLensDirectionChanged,
@@ -20,6 +21,7 @@ class CameraView extends StatefulWidget {
 
   final String title;
   String errorMessage;
+  int repsCount;
   final CustomPaint? customPaint;
   final Function(InputImage inputImage) onImage;
   final VoidCallback? onCameraFeedReady;
@@ -101,6 +103,7 @@ class _CameraViewState extends State<CameraView> {
           _switchLiveCameraToggle(),
           _detectionViewModeToggle(),
           _zoomControl(),
+          _repsCountShow(),
           if (widget.errorMessage.isNotEmpty) _errorMessageShow(),
           // _exposureControl(),
         ],
@@ -121,6 +124,24 @@ class _CameraViewState extends State<CameraView> {
             child: Icon(
               Icons.arrow_back_ios_outlined,
               size: 20,
+            ),
+          ),
+        ),
+      );
+
+  Widget _repsCountShow() => Positioned(
+        top: 40,
+        right: 8,
+        child: SizedBox(
+          height: 50.0,
+          width: 50.0,
+          child: FloatingActionButton(
+            heroTag: Object(),
+            onPressed: () => Navigator.of(context).pop(),
+            backgroundColor: Colors.white,
+            child: Text(
+              widget.repsCount.toString(),
+              style: TextStyle(fontSize: 24.0)
             ),
           ),
         ),

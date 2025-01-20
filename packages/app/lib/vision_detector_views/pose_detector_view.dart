@@ -22,6 +22,9 @@ class _PoseDetectorViewState extends State<PoseDetectorView> {
   CustomPaint? _customPaint;
   String? _text;
   String? _errorMessage;
+  bool _findApexPosition = false;
+  bool _findRestPosition = false;
+  int _repsCount = 0;
   var _cameraLensDirection = CameraLensDirection.back;
 
   @override
@@ -36,6 +39,7 @@ class _PoseDetectorViewState extends State<PoseDetectorView> {
     return DetectorView(
       title: widget.exercise.name,
       errorMessage: _errorMessage ?? "",
+      repsCount: _repsCount, 
       customPaint: _customPaint,
       text: _text,
       onImage: _processImage,
@@ -63,7 +67,23 @@ class _PoseDetectorViewState extends State<PoseDetectorView> {
       } else {
         _errorMessage = "";
       }
+
+      if (_findApexPosition) {
+        if (widget.exercise.isApexPosition(poses[0].landmarks)) {
+          _repsCount++;
+          _findApexPosition = false;
+          _findRestPosition = true;
+        }
+      } else {
+        _findRestPosition = true;
+      }
+
+      if (_findRestPosition && widget.exercise.isRestPosition(poses[0].landmarks)) {
+        _findApexPosition = true;
+        _findRestPosition = false;
+      }
     }
+
     
     if (inputImage.metadata?.size != null &&
         inputImage.metadata?.rotation != null) {
