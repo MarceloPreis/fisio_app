@@ -8,9 +8,7 @@ class LateralElevation extends Exercise {
   LateralElevation() : super (
       name: 'Elevação Lateral',
       description: 'Exercício para fortalecer os ombros',
-      duration: 15,
-      intensity: 'Média',
-      caloriesBurned: 50,
+      apexAngle: 85,
     );
 
     @override
@@ -29,43 +27,30 @@ class LateralElevation extends Exercise {
     }
 
     @override
-    bool isApexPosition(Map<PoseLandmarkType, PoseLandmark> landmarks) {
-      bool leftArm = checkAngle(
-        landmarks,
-        PoseLandmarkType.leftElbow,
-        PoseLandmarkType.leftShoulder,
-        PoseLandmarkType.leftHip,
-        '',
-        '>=',
-        85,
-      );
+    bool isApexPosition(Map<PoseLandmarkType, PoseLandmark> landmarks, List<Pose>? useAsApex) {
+      double apex = apexAngle;
 
-      bool rightArm = checkAngle(
+      if (useAsApex != null) {
+        apex = calculateAngle(
+            useAsApex[0].landmarks[PoseLandmarkType.rightElbow],
+            useAsApex[0].landmarks[PoseLandmarkType.rightShoulder],
+            useAsApex[0].landmarks[PoseLandmarkType.rightHip]);
+      }
+
+      return checkAngle(
         landmarks,
         PoseLandmarkType.rightElbow,
         PoseLandmarkType.rightShoulder,
         PoseLandmarkType.rightHip,
         '',
         '>=',
-        85,
+        apex,
       );
-
-      return leftArm && rightArm;
     }
 
     @override
     bool isRestPosition(Map<PoseLandmarkType, PoseLandmark> landmarks) {
-      bool leftArm = checkAngle(
-        landmarks,
-        PoseLandmarkType.leftElbow,
-        PoseLandmarkType.leftShoulder,
-        PoseLandmarkType.leftHip,
-        '',
-        '<=',
-        30,
-      );
-
-      bool rightArm = checkAngle(
+      return checkAngle(
         landmarks,
         PoseLandmarkType.rightElbow,
         PoseLandmarkType.rightShoulder,
@@ -74,8 +59,28 @@ class LateralElevation extends Exercise {
         '<=',
         30,
       );
+    }
 
-      return leftArm && rightArm;
+    @override
+    MaxRangeResponse getGreaterRange(List<Pose>? max, List<Pose>? current) {
+      
+      if (max == null || current == null) {
+        return MaxRangeResponse(isMaxRange: false, pose: null);
+      }
+
+      double maxAngle = calculateAngle(
+          max[0].landmarks[PoseLandmarkType.rightElbow],
+          max[0].landmarks[PoseLandmarkType.rightShoulder],
+          max[0].landmarks[PoseLandmarkType.rightHip]);
+
+      double currentAngle = calculateAngle(
+          current[0].landmarks[PoseLandmarkType.rightElbow],
+          current[0].landmarks[PoseLandmarkType.rightShoulder],
+          current[0].landmarks[PoseLandmarkType.rightHip]);
+          
+      bool isMaxRange = maxAngle < currentAngle;
+
+      return MaxRangeResponse(isMaxRange: isMaxRange, pose: isMaxRange ? current : max );
     }
 
     List<ExerciseRule> getRules() {
@@ -123,5 +128,18 @@ class LateralElevation extends Exercise {
       ];
 
       return rules;
+    }
+
+    double showAngle(List<Pose>? pose ) {
+      if (pose == null) {
+        return 0.0;
+      }
+      
+      double angle = calculateAngle(
+          pose[0].landmarks[PoseLandmarkType.rightElbow],
+          pose[0].landmarks[PoseLandmarkType.rightShoulder],
+          pose[0].landmarks[PoseLandmarkType.rightHip]);
+      
+      return angle;
     }
 }

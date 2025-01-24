@@ -2,14 +2,15 @@ import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
-import '../exercises/exercise.dart';
+// import '../exercises/exercise.dart';
+import '../exercises/exercise_session.dart';
 import 'detector_view.dart';
 import 'painters/pose_painter.dart';
 
 class PoseDetectorView extends StatefulWidget {
-  final Exercise exercise;
+  final ExerciseSession session;
 
-  PoseDetectorView({required this.exercise});
+  PoseDetectorView({required this.session});
 
   @override
   State<StatefulWidget> createState() => _PoseDetectorViewState();
@@ -21,10 +22,6 @@ class _PoseDetectorViewState extends State<PoseDetectorView> {
   bool _isBusy = false;
   CustomPaint? _customPaint;
   String? _text;
-  String? _errorMessage;
-  bool _findApexPosition = false;
-  bool _findRestPosition = false;
-  int _repsCount = 0;
   var _cameraLensDirection = CameraLensDirection.back;
 
   @override
@@ -37,9 +34,7 @@ class _PoseDetectorViewState extends State<PoseDetectorView> {
   @override
   Widget build(BuildContext context) {
     return DetectorView(
-      title: widget.exercise.name,
-      errorMessage: _errorMessage ?? "",
-      repsCount: _repsCount, 
+      session: widget.session,
       customPaint: _customPaint,
       text: _text,
       onImage: _processImage,
@@ -57,33 +52,8 @@ class _PoseDetectorViewState extends State<PoseDetectorView> {
       _text = '';
     });
 
-
     final poses = await _poseDetector.processImage(inputImage);
-    
-    if (poses.isNotEmpty) {
-      final MovementAnalysisResponse analysis = widget.exercise.movementAnalysis(poses[0].landmarks);
-      if (analysis.error) {
-        _errorMessage = analysis.errorMessage;
-      } else {
-        _errorMessage = "";
-      }
-
-      if (_findApexPosition) {
-        if (widget.exercise.isApexPosition(poses[0].landmarks)) {
-          _repsCount++;
-          _findApexPosition = false;
-          _findRestPosition = true;
-        }
-      } else {
-        _findRestPosition = true;
-      }
-
-      if (_findRestPosition && widget.exercise.isRestPosition(poses[0].landmarks)) {
-        _findApexPosition = true;
-        _findRestPosition = false;
-      }
-    }
-
+    widget.session.processPoses(poses);
     
     if (inputImage.metadata?.size != null &&
         inputImage.metadata?.rotation != null) {

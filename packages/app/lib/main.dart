@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'exercises/exercise_session.dart';
+import 'vision_detector_views/exercise_session_view.dart';
 import 'vision_detector_views/pose_detector_view.dart';
 import './exercises/exercise_factory.dart';
-
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,7 +39,7 @@ class Home extends StatelessWidget {
                   ExpansionTile(
                     title: const Text('Selecione o Exercício'),
                     children: [
-                      CustomCard('Elevação Lateral', PoseDetectorView(exercise: ExerciseFactory.createExercise('lateral_elevation'))),
+                      CustomCard('Elevação Lateral', ExerciseSessionView(exercise: ExerciseFactory.createExercise('lateral_elevation'))),
                     ],
                   ),
                 ],

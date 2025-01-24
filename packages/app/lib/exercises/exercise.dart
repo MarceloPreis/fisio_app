@@ -1,36 +1,28 @@
-import 'dart:ffi';
-
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
-
-import 'exercise_rule.dart';
 
 abstract class Exercise {
   String name;
   String description;
-  int duration; // Duração em minutos
-  String intensity; // Baixa, Média, Alta
-  int caloriesBurned;
+  double apexAngle;
+
 
   Exercise({
     required this.name,
     required this.description,
-    required this.duration,
-    required this.intensity,
-    required this.caloriesBurned,
+    required this.apexAngle,
   });
 
 
   MovementAnalysisResponse movementAnalysis(Map<PoseLandmarkType, PoseLandmark> posesLandmarks);
-  bool isApexPosition(Map<PoseLandmarkType, PoseLandmark> posesLandmarks);
+  MaxRangeResponse getGreaterRange(List<Pose>? max, List<Pose> current);
+  bool isApexPosition(Map<PoseLandmarkType, PoseLandmark> posesLandmarks, List<Pose>? useAsApex);
   bool isRestPosition(Map<PoseLandmarkType, PoseLandmark> posesLandmarks);
+  double showAngle(List<Pose>? pose);
 
   // Método para exibir informações detalhadas sobre o exercício
   void displayDetails() {
     print('Nome: $name');
     print('Descrição: $description');
-    print('Duração: $duration minutos');
-    print('Intensidade: $intensity');
-    print('Calorias Queimadas: $caloriesBurned kcal');
   }
 }
 
@@ -45,5 +37,15 @@ class MovementAnalysisResponse {
     this.errorMessage,
     this.endOfMovement = false,
     this.beginningOfMovement = false,
+  });
+}
+
+class MaxRangeResponse {
+  bool isMaxRange;
+  List<Pose>? pose;
+
+  MaxRangeResponse({
+    required this.isMaxRange,
+    this.pose,
   });
 }

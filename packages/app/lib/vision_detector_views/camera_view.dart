@@ -5,23 +5,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mlkit_commons/google_mlkit_commons.dart';
 
+import '../exercises/exercise_session.dart';
+
 class CameraView extends StatefulWidget {
   CameraView(
       {Key? key,
-      required this.title,
-      required this.customPaint,
+      required this.session,
       required this.onImage,
-      required this.errorMessage,
-      this.repsCount = 0,
+      required this.customPaint,
+
       this.onCameraFeedReady,
       this.onDetectorViewModeChanged,
       this.onCameraLensDirectionChanged,
       this.initialCameraLensDirection = CameraLensDirection.back})
       : super(key: key);
 
-  final String title;
-  String errorMessage;
-  int repsCount;
+  final ExerciseSession session;
   final CustomPaint? customPaint;
   final Function(InputImage inputImage) onImage;
   final VoidCallback? onCameraFeedReady;
@@ -65,6 +64,8 @@ class _CameraViewState extends State<CameraView> {
     if (_cameraIndex != -1) {
       _startLiveFeed();
     }
+
+    widget.session.startSession();
   }
 
   @override
@@ -101,10 +102,10 @@ class _CameraViewState extends State<CameraView> {
           _backButton(),
           _title(),
           _switchLiveCameraToggle(),
-          _detectionViewModeToggle(),
+          _timer(),
           _zoomControl(),
           _repsCountShow(),
-          if (widget.errorMessage.isNotEmpty) _errorMessageShow(),
+          if (widget.session.errorMessage.isNotEmpty) _errorMessageShow(),
           // _exposureControl(),
         ],
       ),
@@ -134,14 +135,32 @@ class _CameraViewState extends State<CameraView> {
         right: 8,
         child: SizedBox(
           height: 50.0,
-          width: 50.0,
+          width: 80.0,
           child: FloatingActionButton(
             heroTag: Object(),
             onPressed: () => Navigator.of(context).pop(),
             backgroundColor: Colors.white,
             child: Text(
-              widget.repsCount.toString(),
-              style: TextStyle(fontSize: 24.0)
+              widget.session.reps.toString() + '/' + widget.session.totalReps.toString(),
+              style: TextStyle(fontSize: 22.0)
+            ),
+          ),
+        ),
+      );
+
+  Widget _timer() => Positioned(
+        bottom: 8,
+        left: 8,
+        child: SizedBox(
+          height: 50.0,
+          width: 80.0,
+          child: FloatingActionButton(
+            heroTag: Object(),
+            onPressed: () => {},
+            backgroundColor: Colors.white,
+            child: Text(
+              widget.session.currentTime.toString(),
+              style: TextStyle(fontSize: 22.0)
             ),
           ),
         ),
@@ -163,7 +182,7 @@ class _CameraViewState extends State<CameraView> {
               padding: const EdgeInsets.all(8.0),
               child: Center(
                 child: Text(
-                  widget.title,
+                  widget.session.exercise.name,
                 ),
               ),
             ),
@@ -190,8 +209,7 @@ class _CameraViewState extends State<CameraView> {
               padding: const EdgeInsets.all(8.0),
               child: Center(
                 child: Text(
-                  widget.errorMessage ??
-                      'Erro desconhecido', // Usando a variável _errorMessage
+                  widget.session.errorMessage, // Usando a variável _errorMessage
                   style: TextStyle(
                       color:
                           Colors.white), // Opcional: Ajusta o estilo do texto

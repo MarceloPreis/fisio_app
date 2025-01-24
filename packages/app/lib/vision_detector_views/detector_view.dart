@@ -2,6 +2,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_commons/google_mlkit_commons.dart';
 
+import '../exercises/exercise_session.dart';
 import 'camera_view.dart';
 import 'gallery_view.dart';
 
@@ -10,10 +11,8 @@ enum DetectorViewMode { liveFeed, gallery }
 class DetectorView extends StatefulWidget {
   DetectorView({
     Key? key,
-    required this.title,
+    required this.session,
     required this.onImage,
-    required this.errorMessage,
-    this.repsCount = 0,
     this.customPaint,
     this.text,
     this.initialDetectionMode = DetectorViewMode.liveFeed,
@@ -23,9 +22,7 @@ class DetectorView extends StatefulWidget {
     this.onCameraLensDirectionChanged,
   }) : super(key: key);
 
-  String errorMessage;
-  int repsCount;
-  final String title;
+  final ExerciseSession session;
   final CustomPaint? customPaint;
   final String? text;
   final DetectorViewMode initialDetectionMode;
@@ -52,9 +49,7 @@ class _DetectorViewState extends State<DetectorView> {
   Widget build(BuildContext context) {
     return _mode == DetectorViewMode.liveFeed
         ? CameraView(
-            title: widget.title,
-            errorMessage: widget.errorMessage ?? "",
-            repsCount: widget.repsCount ?? 0,
+            session: widget.session,
             customPaint: widget.customPaint,
             onImage: widget.onImage,
             onCameraFeedReady: widget.onCameraFeedReady,
@@ -63,7 +58,7 @@ class _DetectorViewState extends State<DetectorView> {
             onCameraLensDirectionChanged: widget.onCameraLensDirectionChanged,
           )
         : GalleryView(
-            title: widget.title,
+            title: widget.session.exercise.name,
             text: widget.text,
             onImage: widget.onImage,
             onDetectorViewModeChanged: _onDetectorViewModeChanged);

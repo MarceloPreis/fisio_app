@@ -37,7 +37,10 @@ checkAngle(
 
 }
 
-double calculateAngle(PoseLandmark point1, PoseLandmark point2, PoseLandmark point3) {
+double calculateAngle(PoseLandmark? point1, PoseLandmark? point2, PoseLandmark? point3) {
+
+  if (point1 == null || point2 == null || point3 == null) return 0;
+
   double angle = atan2(point3.y - point2.y, point3.x - point2.x) - atan2(point1.y - point2.y, point1.x - point2.x);
   
   angle = angle * 180 / pi; // Convertendo para graus
